@@ -32,6 +32,8 @@
     <link href="https://fonts.googleapis.com/css?family=Playfair&#43;Display:700,900&amp;display=swap" rel="stylesheet">
     <!-- Custom styles for this template -->
     <link href="/css/blog.css" rel="stylesheet">
+
+    @stack('styles')
   </head>
     <body>
         @include('layout._header')
@@ -44,6 +46,7 @@
 
         @include('layout._footer')
 
+        @stack('scripts')
     </body>
 </html>
 

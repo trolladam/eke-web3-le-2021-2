@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Image;
 use App\Models\User;
 use App\Models\Post;
 use App\Models\Topic;
@@ -10,6 +11,12 @@ use Illuminate\Http\Request;
 
 class PostController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->authorizeResource(Post::class, 'post');
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -75,7 +82,10 @@ class PostController extends Controller
      */
     public function edit(Post $post)
     {
-        //
+        $topic_options = Topic::orderBy('name')->get();
+
+        return view('post.edit')
+            ->with(compact('post', 'topic_options'));
     }
 
     /**
@@ -87,7 +97,24 @@ class PostController extends Controller
      */
     public function update(PostRequest $request, Post $post)
     {
-        //
+        $post->update($request->all());
+
+        if ($request->file('cover'))
+        {
+            $image = $request->file('cover');
+            $fileID = uniqid();
+            $filename = "/posts/{$fileID}.{$image->extension()}";
+
+            Image::make($image)->save(public_path("/uploads{$filename}"));
+
+            $post->cover = $filename;
+
+            $post->save();
+        }
+
+        return redirect()
+            ->route('post.edit', $post)
+            ->with('success', __('Post updated successfully'));
     }
 
     /**
